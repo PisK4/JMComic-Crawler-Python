@@ -71,6 +71,9 @@ SLICE_CAP_HEIGHT = 3600   # 上游对高度超过此上限的页纵向切分
 > 替代方案是重命名包为 `jmcomic_archive`。未采用：`jm_plugin.py` /
 > `jm_config.py` / `jm_toolkit.py` 恰是上游改动最频繁的文件（近 6 个月 7–10 次），
 > 重命名会让每次 merge 都撞路径。
+>
+> **改动只活在本仓库**：上游主仓（`workspace_intelligence`）把它作为 gitlink
+> 引用，**不追踪这里的源码**。改完必须 `git push origin master`，否则定制会丢。
 
 ## 同步上游
 
