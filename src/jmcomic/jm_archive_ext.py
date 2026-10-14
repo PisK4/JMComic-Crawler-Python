@@ -100,10 +100,13 @@ class SliceStitchPlugin(JmOptionPlugin):
                 self.log(f'[slice_stitch] 无法读取 {f}: {e}', 'warning')
                 return 0
 
+        # 分组：**只有高度恰为上限**才是"本页未完"。
+        # 不能写成 `h < cap`：已拼接的页高度会**大于**上限（如 4000），
+        # 那样会被误判成续片而反复合并，直到超出 WebP 的 16383px 上限并报错。
         groups, cur = [], []
         for item in sizes:
             cur.append(item)
-            if item[2] < cap:
+            if item[2] != cap:
                 groups.append(cur)
                 cur = []
         if cur:                       # 末尾仍是满高片：本页被截断，收尾成组
@@ -146,14 +149,27 @@ class SliceStitchPlugin(JmOptionPlugin):
                 canvas.paste(im, (0, y))
                 y += im.height
 
+            # 原子落盘：编码失败（如超出 WebP 16383px 上限）时不能留下半截文件，
+            # 否则该页既毁又失去原件（实测踩坑）。
             out_path = os.path.join(ch_dir, head)
             ext = os.path.splitext(head)[1].lower()
-            if ext in ('.jpg', '.jpeg'):
-                canvas.save(out_path, 'JPEG', quality=quality)
-            elif ext == '.png':
-                canvas.save(out_path, 'PNG')
-            else:
-                canvas.save(out_path, 'WEBP', quality=quality, method=4)
+            tmp_path = out_path + '.part'
+            try:
+                if ext in ('.jpg', '.jpeg'):
+                    canvas.save(tmp_path, 'JPEG', quality=quality)
+                elif ext == '.png':
+                    canvas.save(tmp_path, 'PNG')
+                else:
+                    canvas.save(tmp_path, 'WEBP', quality=quality, method=4)
+                os.replace(tmp_path, out_path)
+            except BaseException:
+                # 写失败则**保留全部原片**，不做任何删除
+                if os.path.exists(tmp_path):
+                    try:
+                        os.remove(tmp_path)
+                    except OSError:
+                        pass
+                raise
 
             if delete_slices:
                 for f, _, _ in g[1:]:
