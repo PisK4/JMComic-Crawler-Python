@@ -140,6 +140,10 @@ class JmMagicConstants:
     SCRAMBLE_268850 = 268850
     SCRAMBLE_421926 = 421926  # 2023-02-08后改了图片切割算法
 
+    # 上游把**高度超过此上限**的页纵向切成多片（满片…满片+余片）。
+    # 本项目实测值（comic-intelligence/docs/04 §5b），SliceStitchPlugin 用它判续片。
+    SLICE_CAP_HEIGHT = 3600
+
     # 移动端API密钥
     APP_TOKEN_SECRET = '185Hcomic3PAPP7R'
     APP_TOKEN_SECRET_2 = '18comicAPPContent'

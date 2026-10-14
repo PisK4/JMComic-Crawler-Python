@@ -13,6 +13,10 @@ from .jm_feature import *
 from .jm_async_client import AsyncJmApiClient
 from .jm_async_downloader import JmAsyncDownloader
 
+# 本项目（comic-intelligence）的定制扩展；其插件类会被下面的统一注册逻辑自动注册。
+# 所有自研逻辑集中在 jm_archive_ext，以压低与 upstream 的冲突面（见 FORK.md）。
+from .jm_archive_ext import *
+
 # 下面进行注册组件（客户端、插件）
 gb = dict(filter(lambda pair: isinstance(pair[1], type), globals().items()))
 

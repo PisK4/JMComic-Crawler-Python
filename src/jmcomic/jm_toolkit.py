@@ -1151,7 +1151,10 @@ class JmImageTool:
         scramble_id = int(scramble_id)
         aid = int(aid)
 
-        if aid < scramble_id:
+        # 边界语义：站点 descramble.js 用 `photoId <= scrambleId → false`（判不解扰），
+        # 上游原实现为 `aid < scramble_id`（即 aid == scramble_id 会走下面的固定 10 片）。
+        # 本项目采纳站点语义（comic-intelligence/docs/04 §2.2），故用 <=。
+        if aid <= scramble_id:
             return 0
         elif aid < JmMagicConstants.SCRAMBLE_268850:
             return 10
