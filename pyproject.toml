@@ -50,6 +50,10 @@ Documentation = "https://jmcomic.readthedocs.io"
 [project.scripts]
 jmcomic = "jmcomic.cli:main"
 jmv = "jmcomic.cli:view_main"
+jmc = "jmcomic_archive.cli:main"
 
 [tool.setuptools.dynamic]
 version = {attr = "jmcomic.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
